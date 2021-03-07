@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sample api data</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+   <style>
+    .card{
+        height:500px;
+        margin-bottom:20px;
+
+    }
+    .card-img-top{
+        height:200px;
+        padding:15px;
+        background-image:linear-gradient(to right,#bfbfbf,#666666);
+        
+    }
+    .card-body{
+        background-image:linear-gradient(to right,#bfbfbf,#666666);
+    }
+    .container{
+        background-color:#00264d; 
+        padding-top:20px;
+        padding-bottom:20px;
+    }
+   </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row" id="rowone">
+
+                </div>
+                <div class="modal" tabindex="-1" role="dialog" id="myModal">
+                        <div class="modal-dialog" role="document"> 
+                          <div class="modal-content bg-info text-light text-center">
+                             <div class="modal-header">
+                              <h5 class="modal-title">Weather Details</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div> 
+                             <div class="modal-body"> 
+                                            <p id="lat"><p>
+                                            <p id="lng"></p>
+                                            <p id="temp"><p>
+                                            <p id="description"></p>
+                                            
+                                        
+                            </div> 
+                          
+                          </div>
+                
+                      </div>
+                
+
+            </div>
+    
+    <script>
+        var countriesData=fetch('https://restcountries.eu/rest/v2/all');
+        countriesData
+        .then(function(res){
+            return res.json();
+        })
+        .then(function(data){
+            console.log(data);
+          constructData(data);
+        })
+        .catch(function(err){
+            console.log(err);
+    })
+    function constructData(data){
+        for(var i in data){
+            displayData(i,data);
+        }
+    }
+    function displayData(i,data){
+    var rowId=document.getElementById("rowone");
+
+    var col=document.createElement("div");
+    col.setAttribute("class","col-lg-4 col-sm-12");
+
+    var card=document.createElement("div");
+    card.setAttribute("class","card");
+
+    var countryName=document.createElement("div");
+    countryName.setAttribute("class","card-header bg-dark text-light text-center");
+    countryName.innerText=data[i].name;
+
+    var img=document.createElement("img");
+    img.setAttribute("class","card-img-top bg-secondary");
+    img.src=data[i].flag;
+
+    var cardbody=document.createElement("div");
+    cardbody.setAttribute("class","card-body text-center text-light");
+
+    var countryDetails=document.createElement("div");
+    countryDetails.setAttribute("class","card-title");
+    countryDetails.innertext="country details";
+
+    var countryCapital=document.createElement("p");
+    countryCapital.setAttribute("class","card-text");
+    countryCapital.innerText="Capital:"+data[i].capital;
+    
+    var countryLatlag=document.createElement("p");
+    countryLatlag.setAttribute("class","card-text");
+    countryLatlag.innerText="Latlng:"+data[i].latlng;
+
+    var countryRegion=document.createElement("p");
+    countryRegion.setAttribute("class","card-text");
+    countryRegion.innerText="Region:"+data[i].region;
+
+    var countryCode=document.createElement("p");
+    countryCode.setAttribute("class","card-text");
+    countryCode.innerText="Country code:"+data[i].alpha3Code;
+
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    var temp=document.getElementById("temp");
+    var lat=document.getElementById("lat");
+    var lng=document.getElementById("lng");
+
+    var cardButton=document.createElement("button");
+    cardButton.setAttribute("class","btn btn-primary");
+    cardButton.setAttribute("id","myBtn")
+    cardButton.innerText="Click to get Weather";
+    cardButton.addEventListener("click",function(){
+        getWeatherData(data[i].name)
+})
+
+
+  col.appendChild(card);
+  card.appendChild(countryName);
+    card.appendChild(img);
+    card.appendChild(cardbody);
+    cardbody.append(countryDetails,countryCapital,countryLatlag,countryRegion,countryCode,cardButton);
+    rowId.append(col);
+    
+
+    
+
+    function getWeatherData(cname){
+        var key='c2db0809eb943a588e64215ac65091ee';
+        fetch('https://api.openweathermap.org/data/2.5/weather?q='+cname+'&appid='+key)
+        .then(function(resp){
+            return resp.json();
+        })
+        .then(function(weatherdata){
+            modal.style.display="block";
+           temp.innerHTML="temperature:"+weatherdata.main.temp;
+           lat.innerHTML="latitude:"+weatherdata.coord.lat;
+           lng.innerHTML="longitude:"+weatherdata.coord.lon;
+           description.innerHTML="weather:"+weatherdata.weather[0].description;
+           console.log(weatherdata)
+
+        })
+        .catch(function(err){
+            console.log(err);
+        })
+
+    }
+   
+    span.onclick = function() {
+  modal.style.display = "none";
+}
+    window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+}
+        
+        </script>
+        </body>
+        </html>
